@@ -1,0 +1,122 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold">Author Dashboard</h1>
+    <%= link_to "Create New Story", new_story_path, class: "bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg" %>
+  </div>
+
+  <!-- Stats Overview -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+      <h3 class="text-sm font-semibold text-gray-600 mb-2">Total Stories</h3>
+      <p class="text-4xl font-bold text-gray-900"><%= @total_stories %></p>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+      <h3 class="text-sm font-semibold text-gray-600 mb-2">Published</h3>
+      <p class="text-4xl font-bold text-green-600"><%= @published_stories %></p>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+      <h3 class="text-sm font-semibold text-gray-600 mb-2">Drafts</h3>
+      <p class="text-4xl font-bold text-yellow-600"><%= @draft_stories %></p>
+    </div>
+  </div>
+
+  <!-- Empty State: No Stories Yet -->
+  <% if @stories.empty? %>
+    <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-12 text-center">
+      <svg class="mx-auto h-16 w-16 text-blue-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">Create Your First Story</h2>
+      <p class="text-gray-600 mb-6">Start your writing journey by creating your first story. Share your imagination with readers around the world!</p>
+      <%= link_to "Create Your First Story", new_story_path, class: "inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg" %>
+    </div>
+  <% else %>
+    <!-- My Stories with Separated Sections -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-2xl font-bold mb-6">My Stories</h2>
+
+      <!-- Tab Navigation -->
+      <div class="mb-6 border-b border-gray-200">
+        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+          <button onclick="switchTab('all')" id="tab-all" class="tab-button active border-b-2 border-blue-600 py-2 px-1 text-sm font-medium text-blue-600">
+            All (<%= @total_stories %>)
+          </button>
+          <button onclick="switchTab('published')" id="tab-published" class="tab-button border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+            Published (<%= @published_stories %>)
+          </button>
+          <button onclick="switchTab('drafts')" id="tab-drafts" class="tab-button border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+            Drafts (<%= @draft_stories %>)
+          </button>
+        </nav>
+      </div>
+
+      <!-- All Stories Tab -->
+      <div id="content-all" class="tab-content space-y-4">
+        <% @stories.each do |story| %>
+          <%= render partial: 'story_card', locals: { story: story } %>
+        <% end %>
+      </div>
+
+      <!-- Published Stories Tab -->
+      <div id="content-published" class="tab-content space-y-4 hidden">
+        <% published_stories = @stories.select { |s| s.status == 'published' } %>
+        <% if published_stories.any? %>
+          <% published_stories.each do |story| %>
+            <%= render partial: 'story_card', locals: { story: story } %>
+          <% end %>
+        <% else %>
+          <div class="text-center py-12 text-gray-500">
+            <p class="text-lg mb-4">No published stories yet</p>
+            <p class="text-sm">Publish your drafts to make them visible to readers</p>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Draft Stories Tab -->
+      <div id="content-drafts" class="tab-content space-y-4 hidden">
+        <% draft_stories = @stories.select { |s| s.status == 'draft' } %>
+        <% if draft_stories.any? %>
+          <% draft_stories.each do |story| %>
+            <%= render partial: 'story_card', locals: { story: story } %>
+          <% end %>
+        <% else %>
+          <div class="text-center py-12 text-gray-500">
+            <p class="text-lg mb-4">No drafts</p>
+            <p class="text-sm">All your stories are published!</p>
+          </div>
+        <% end %>
+      </div>
+
+      <% if @total_stories > 10 %>
+        <div class="mt-6 text-center">
+          <%= link_to "View All My Stories", my_stories_stories_path, class: "text-blue-600 hover:text-blue-700 font-medium" %>
+        </div>
+      <% end %>
+    </div>
+
+    <script>
+      function switchTab(tab) {
+        // Hide all tab contents
+        document.querySelectorAll('.tab-content').forEach(content => {
+          content.classList.add('hidden');
+        });
+
+        // Remove active state from all tabs
+        document.querySelectorAll('.tab-button').forEach(button => {
+          button.classList.remove('active', 'border-blue-600', 'text-blue-600');
+          button.classList.add('border-transparent', 'text-gray-500');
+        });
+
+        // Show selected tab content
+        document.getElementById('content-' + tab).classList.remove('hidden');
+
+        // Add active state to selected tab
+        const activeTab = document.getElementById('tab-' + tab);
+        activeTab.classList.add('active', 'border-blue-600', 'text-blue-600');
+        activeTab.classList.remove('border-transparent', 'text-gray-500');
+      }
+    </script>
+  <% end %>
+</div>

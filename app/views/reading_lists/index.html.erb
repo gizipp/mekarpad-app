@@ -1,0 +1,38 @@
+<div class="stories-container">
+  <h1>My Reading List</h1>
+
+  <% if @reading_lists.any? %>
+    <div class="stories-grid">
+      <% @reading_lists.each do |reading_list| %>
+        <% story = reading_list.story %>
+        <div class="story-card">
+          <% if story.cover_image.attached? %>
+            <%= image_tag story.cover_image.variant(resize_to_limit: [300, 400]), alt: story.title, class: "story-cover" %>
+          <% else %>
+            <div class="story-cover-placeholder">
+              <%= story.title.first %>
+            </div>
+          <% end %>
+
+          <div class="story-info">
+            <h3><%= link_to story.title, story_path(story) %></h3>
+            <p class="author">by <%= story.user.name %></p>
+            <p class="description"><%= truncate(story.description, length: 100) %></p>
+
+            <div class="story-stats">
+              <span class="stat">👁 <%= story.view_count %></span>
+              <span class="stat">📖 <%= story.chapters_count %> chapters</span>
+            </div>
+
+            <%= button_to "Remove", reading_list_path(reading_list), method: :delete, class: "btn btn-danger", style: "margin-top: 1rem;" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <p>Your reading list is empty. Start exploring stories to add them to your list!</p>
+      <%= link_to "Browse Stories", stories_path, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>

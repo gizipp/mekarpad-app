@@ -1,0 +1,242 @@
+<div class="stories-container">
+  <div class="header">
+    <h1>My Stories</h1>
+    <%= link_to "Write New Story", new_story_path, class: "btn btn-primary" %>
+  </div>
+
+  <div class="stories-grid">
+    <% @stories.each do |story| %>
+      <div class="story-card">
+        <% if story.cover_image.attached? %>
+          <%= image_tag story.cover_image.variant(resize_to_limit: [300, 400]), alt: story.title, class: "story-cover" %>
+        <% else %>
+          <div class="story-cover-placeholder">
+            <%= story.title.first %>
+          </div>
+        <% end %>
+
+        <div class="story-info">
+          <h3><%= link_to story.title, story_path(story) %></h3>
+          <p class="description"><%= truncate(story.description, length: 100) %></p>
+
+          <div class="story-stats">
+            <span class="stat">
+              <span class="icon">👁</span>
+              <%= story.view_count %>
+            </span>
+            <span class="stat">
+              <span class="icon">📖</span>
+              <%= story.chapters.count %> chapters
+            </span>
+          </div>
+
+          <div class="story-status">
+            <span class="status-badge <%= story.status %>">
+              <%= story.status&.titleize || 'Draft' %>
+            </span>
+          </div>
+
+          <div class="story-actions">
+            <%= link_to "View", story_path(story), class: "btn btn-secondary" %>
+            <%= link_to "Edit", edit_story_path(story), class: "btn btn-secondary" %>
+            <%= link_to "Add Chapter", new_story_chapter_path(story), class: "btn btn-secondary" %>
+            <%= button_to "Delete", story_path(story), method: :delete, data: { confirm: "Are you sure you want to delete this story?" }, class: "btn btn-danger" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @stories.empty? %>
+    <div class="empty-state">
+      <p>You haven't written any stories yet.</p>
+      <%= link_to "Write Your First Story", new_story_path, class: "btn btn-primary" %>
+    </div>
+  <% end %>
+</div>
+
+<style>
+.stories-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.stories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.story-card {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.story-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.story-cover {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.story-cover-placeholder {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  font-weight: bold;
+  color: white;
+}
+
+.story-info {
+  padding: 1.5rem;
+}
+
+.story-info h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+}
+
+.story-info h3 a {
+  color: #333;
+  text-decoration: none;
+}
+
+.story-info h3 a:hover {
+  color: #667eea;
+}
+
+.description {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0.5rem 0 1rem 0;
+  line-height: 1.4;
+}
+
+.story-stats {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.stat .icon {
+  font-size: 1rem;
+}
+
+.story-status {
+  margin-bottom: 1rem;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-badge.published {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-badge.draft {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.story-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: #667eea;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #5568d3;
+}
+
+.btn-secondary {
+  background: #f8f9fa;
+  color: #333;
+  border: 1px solid #dee2e6;
+}
+
+.btn-secondary:hover {
+  background: #e9ecef;
+}
+
+.btn-danger {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #c82333;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.empty-state p {
+  font-size: 1.25rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+</style>

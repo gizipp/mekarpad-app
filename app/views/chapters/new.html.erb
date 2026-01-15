@@ -1,0 +1,60 @@
+<div class="chapter-editor">
+  <div class="editor-header">
+    <h1>New Chapter for <%= @story.title %></h1>
+    <div class="autosave-status" data-autosave-target="status"></div>
+  </div>
+
+  <%= form_with model: [@story, @chapter],
+                local: true,
+                data: {
+                  controller: "autosave",
+                  autosave_target: "form",
+                  autosave_url_value: @chapter.persisted? ? story_chapter_path(@story, @chapter) : nil
+                } do |f| %>
+    <% if @chapter.errors.any? %>
+      <div class="errors">
+        <h3><%= pluralize(@chapter.errors.count, "error") %> prohibited this chapter from being saved:</h3>
+        <ul>
+          <% @chapter.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= f.hidden_field :order %>
+
+    <div class="form-group">
+      <%= f.label :title, "Chapter Title" %>
+      <%= f.text_field :title,
+                       class: "form-control chapter-title-input",
+                       placeholder: "Enter your chapter title...",
+                       autofocus: true %>
+    </div>
+
+    <div class="form-group editor-content">
+      <%= f.label :content, "Chapter Content" %>
+      <%= f.rich_text_area :content,
+                           class: "chapter-content-editor",
+                           placeholder: "Start writing your chapter...",
+                           data: { autosave_target: "content" } %>
+      <small class="form-text text-muted">
+        Your work is automatically saved as you type. Use the toolbar for basic formatting.
+      </small>
+    </div>
+
+    <div class="form-actions">
+      <%= f.hidden_field :status, value: 'draft' %>
+      <%= f.submit "Save as Draft",
+                   name: "commit_draft",
+                   class: "btn btn-secondary",
+                   formnovalidate: true %>
+      <%= f.submit "Publish Chapter",
+                   name: "commit_publish",
+                   class: "btn btn-primary",
+                   data: { confirm: "Are you sure you want to publish this chapter? It will be visible to readers." },
+                   onclick: "this.form.querySelector('[name=\"chapter[status]\"]').value='published'" %>
+      <%= link_to "Cancel", @story, class: "btn btn-link" %>
+    </div>
+  <% end %>
+</div>

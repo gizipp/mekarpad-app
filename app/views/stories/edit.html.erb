@@ -1,0 +1,54 @@
+<div class="form-container">
+  <h1>Edit Story</h1>
+
+  <%= form_with model: @story, local: true do |f| %>
+    <% if @story.errors.any? %>
+      <div class="errors">
+        <h3><%= pluralize(@story.errors.count, "error") %> prohibited this story from being saved:</h3>
+        <ul>
+          <% @story.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="form-group">
+      <%= f.label :title %>
+      <%= f.text_field :title, class: "form-control" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :description %>
+      <%= f.text_area :description, rows: 5, class: "form-control" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :category %>
+      <%= f.select :category, %w[Romance Fantasy Mystery Thriller SciFi Horror Adventure], {}, class: "form-control" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :language %>
+      <%= f.select :language, Story::LANGUAGES.map { |k, v| [v, k] }, {}, class: "form-control" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :cover_image %>
+      <%= f.file_field :cover_image, class: "form-control" %>
+      <% if @story.cover_image.attached? %>
+        <small class="form-text text-muted">Current cover: <%= @story.cover_image.filename %></small>
+      <% end %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :status %>
+      <%= f.select :status, [["Draft", "draft"], ["Published", "published"]], {}, class: "form-control" %>
+    </div>
+
+    <div class="form-actions">
+      <%= f.submit "Update Story", class: "btn btn-primary" %>
+      <%= link_to "Cancel", @story, class: "btn btn-secondary" %>
+    </div>
+  <% end %>
+</div>

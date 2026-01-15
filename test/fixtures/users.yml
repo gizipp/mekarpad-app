@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: User One
+  email: user1@example.com
+  bio: MyText
+  otp_code: MyString
+  otp_sent_at: 2025-11-05 13:13:55
+
+two:
+  name: User Two
+  email: user2@example.com
+  bio: MyText
+  otp_code: MyString
+  otp_sent_at: 2025-11-05 13:13:55

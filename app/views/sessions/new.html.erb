@@ -1,0 +1,18 @@
+<div style="max-width: 400px; margin: 50px auto; padding: 20px;">
+  <h1><%= t("sessions.sign_in") %></h1>
+
+  <%= form_with url: session_path, method: :post, local: true do |f| %>
+    <div style="margin-bottom: 15px;">
+      <%= f.label :email, t("sessions.email") %><br>
+      <%= f.email_field :email, required: true, autofocus: true, style: "width: 100%; padding: 8px; font-size: 16px;" %>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+      <%= f.submit t("sessions.send_otp"), style: "width: 100%; padding: 10px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;" %>
+    </div>
+  <% end %>
+
+  <p style="margin-top: 20px; color: #666; font-size: 14px;">
+    <%= t("sessions.please_sign_in") %>
+  </p>
+</div>

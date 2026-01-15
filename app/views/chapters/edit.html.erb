@@ -1,0 +1,84 @@
+<div class="chapter-editor">
+  <div class="editor-header">
+    <h1>Edit Chapter: <%= @chapter.title %></h1>
+    <div class="chapter-status-badge">
+      <% if @chapter.draft? %>
+        <span class="badge badge-draft">Draft</span>
+      <% else %>
+        <span class="badge badge-published">Published</span>
+      <% end %>
+    </div>
+    <div class="autosave-status" data-autosave-target="status"></div>
+  </div>
+
+  <%= form_with model: [@story, @chapter],
+                local: true,
+                data: {
+                  controller: "autosave",
+                  autosave_target: "form",
+                  autosave_url_value: story_chapter_path(@story, @chapter)
+                } do |f| %>
+    <% if @chapter.errors.any? %>
+      <div class="errors">
+        <h3><%= pluralize(@chapter.errors.count, "error") %> prohibited this chapter from being saved:</h3>
+        <ul>
+          <% @chapter.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= f.hidden_field :order %>
+
+    <div class="form-group">
+      <%= f.label :title, "Chapter Title" %>
+      <%= f.text_field :title,
+                       class: "form-control chapter-title-input",
+                       placeholder: "Enter your chapter title...",
+                       autofocus: true %>
+    </div>
+
+    <div class="form-group editor-content">
+      <%= f.label :content, "Chapter Content" %>
+      <%= f.rich_text_area :content,
+                           class: "chapter-content-editor",
+                           placeholder: "Write your chapter content...",
+                           data: { autosave_target: "content" } %>
+      <small class="form-text text-muted">
+        Your changes are automatically saved. <%= @chapter.published? ? "You can edit and re-save published chapters." : "" %>
+      </small>
+    </div>
+
+    <div class="form-actions">
+      <%= f.hidden_field :status, value: @chapter.status %>
+
+      <% if @chapter.draft? %>
+        <%= f.submit "Save Draft",
+                     name: "commit_draft",
+                     class: "btn btn-secondary",
+                     formnovalidate: true %>
+        <%= f.submit "Publish Chapter",
+                     name: "commit_publish",
+                     class: "btn btn-primary",
+                     data: { confirm: "Are you sure you want to publish this chapter? It will be visible to readers." },
+                     onclick: "this.form.querySelector('[name=\"chapter[status]\"]').value='published'" %>
+      <% else %>
+        <%= f.submit "Save Changes",
+                     class: "btn btn-primary" %>
+        <%= link_to "Unpublish",
+                    unpublish_story_chapter_path(@story, @chapter),
+                    method: :patch,
+                    class: "btn btn-warning",
+                    data: { confirm: "Are you sure? This will hide the chapter from readers." } %>
+      <% end %>
+
+      <%= link_to "Cancel", story_chapter_path(@story, @chapter), class: "btn btn-link" %>
+      <%= link_to "Delete Chapter",
+                  story_chapter_path(@story, @chapter),
+                  method: :delete,
+                  class: "btn btn-danger btn-sm",
+                  data: { confirm: "Are you sure? This cannot be undone." } %>
+    </div>
+  <% end %>
+</div>

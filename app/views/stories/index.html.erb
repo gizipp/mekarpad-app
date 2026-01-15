@@ -1,0 +1,70 @@
+<div class="stories-container">
+  <div class="header">
+    <h1><%= t("stories.discover") %></h1>
+    <% if current_user %>
+      <%= link_to t("stories.write_story"), new_story_path, class: "btn btn-primary" %>
+    <% end %>
+  </div>
+
+  <div class="filters">
+    <div class="filter-section">
+      <h3><%= t("stories.filter_by_category") %></h3>
+      <div class="categories">
+        <%= link_to t("stories.all"), stories_path, class: "category-link" %>
+        <% %w[Romance Fantasy Mystery Thriller SciFi Horror Adventure].each do |category| %>
+          <%= link_to t("stories.categories.#{category.downcase}"), stories_path(category: category), class: "category-link" %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <h3><%= t("stories.filter_by_language") %></h3>
+      <div class="languages">
+        <%= link_to t("stories.all_languages"), stories_path, class: "language-link" %>
+        <% Story::LANGUAGES.each do |code, name| %>
+          <%= link_to name, stories_path(language: code), class: "language-link" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="stories-grid">
+    <% @stories.each do |story| %>
+      <div class="story-card">
+        <% if story.cover_image.attached? %>
+          <%= image_tag story.cover_image.variant(resize_to_limit: [300, 400]), alt: story.title, class: "story-cover" %>
+        <% else %>
+          <div class="story-cover-placeholder">
+            <%= story.title.first %>
+          </div>
+        <% end %>
+
+        <div class="story-info">
+          <h3><%= link_to story.title, story_path(story) %></h3>
+          <p class="author"><%= t("stories.by_author", author: story.user.name) %></p>
+          <p class="description"><%= truncate(story.description, length: 100) %></p>
+
+          <div class="story-stats">
+            <span class="stat">
+              <span class="icon">👁</span>
+              <%= story.view_count %>
+            </span>
+            <span class="stat">
+              <span class="icon">📖</span>
+              <%= story.chapters_count %> <%= t("stories.chapters") %>
+            </span>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @stories.empty? %>
+    <div class="empty-state">
+      <p><%= t("stories.no_stories") %></p>
+      <% if current_user %>
+        <%= link_to t("stories.write_story"), new_story_path, class: "btn btn-primary" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

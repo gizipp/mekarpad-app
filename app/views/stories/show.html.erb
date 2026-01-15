@@ -1,0 +1,101 @@
+<% story_seo_tags(@story) %>
+
+<div class="story-show">
+  <div class="story-header">
+    <% if @story.cover_image.attached? %>
+      <%= image_tag @story.cover_image.variant(resize_to_limit: [400, 600]), alt: @story.title, class: "story-cover-large" %>
+    <% end %>
+
+    <div class="story-details">
+      <h1><%= @story.title %></h1>
+      <p class="author">by <%= link_to @story.user.name, "#" %></p>
+      <p class="category"><%= @story.category %></p>
+
+      <div class="story-stats">
+        <span class="stat">👁 <%= @story.view_count %> views</span>
+        <span class="stat">📖 <%= @story.chapters_count %> chapters</span>
+      </div>
+
+      <div class="story-actions">
+        <% if current_user %>
+          <% if @story.in_reading_list_of?(current_user) %>
+            <% reading_list = current_user.reading_lists.find_by(story: @story) %>
+            <%= button_to "Remove from List", reading_list_path(reading_list), method: :delete, class: "btn btn-secondary" %>
+          <% else %>
+            <%= button_to "Add to Reading List", story_reading_list_path(@story), class: "btn btn-primary" %>
+          <% end %>
+
+          <% if @story.user == current_user %>
+            <%= link_to "Edit Story", edit_story_path(@story), class: "btn btn-secondary" %>
+            <%= button_to "Delete Story", story_path(@story), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-danger" %>
+          <% end %>
+        <% end %>
+      </div>
+
+      <div class="description">
+        <h3>Description</h3>
+        <p><%= simple_format(@story.description) %></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="chapters-section">
+    <div class="section-header">
+      <h2>Chapters</h2>
+      <% if current_user && @story.user == current_user %>
+        <%= link_to "Add Chapter", new_story_chapter_path(@story), class: "btn btn-primary" %>
+      <% end %>
+    </div>
+
+    <% if @chapters.any? %>
+      <div class="chapters-list">
+        <% @chapters.each do |chapter| %>
+          <div class="chapter-item">
+            <div class="chapter-info">
+              <h4><%= link_to "#{chapter.order}. #{chapter.title}", story_chapter_path(@story, chapter) %></h4>
+              <% if @reading_progress && @reading_progress.chapter == chapter %>
+                <span class="badge">Currently Reading</span>
+              <% end %>
+            </div>
+            <% if current_user && @story.user == current_user %>
+              <div class="chapter-actions">
+                <%= link_to "Edit", edit_story_chapter_path(@story, chapter), class: "btn-small" %>
+                <%= button_to "Delete", story_chapter_path(@story, chapter), method: :delete, data: { confirm: "Are you sure?" }, class: "btn-small btn-danger" %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="empty-state">No chapters yet. Start writing!</p>
+    <% end %>
+  </div>
+
+  <div class="comments-section">
+    <h2>Comments</h2>
+
+    <% if current_user %>
+      <%= form_with model: [:story, Comment.new], url: story_comments_path(@story), local: true do |f| %>
+        <div class="form-group">
+          <%= f.text_area :content, placeholder: "Write a comment...", rows: 3, class: "form-control" %>
+        </div>
+        <%= f.submit "Post Comment", class: "btn btn-primary" %>
+      <% end %>
+    <% end %>
+
+    <div class="comments-list">
+      <% @comments.each do |comment| %>
+        <div class="comment">
+          <div class="comment-header">
+            <strong><%= comment.user.name %></strong>
+            <span class="comment-date"><%= time_ago_in_words(comment.created_at) %> ago</span>
+          </div>
+          <p class="comment-content"><%= comment.content %></p>
+          <% if current_user && comment.user == current_user %>
+            <%= button_to "Delete", comment_path(comment), method: :delete, data: { confirm: "Are you sure?" }, class: "btn-small btn-danger" %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

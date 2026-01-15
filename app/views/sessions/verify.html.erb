@@ -1,0 +1,33 @@
+<div style="max-width: 400px; margin: 50px auto; padding: 20px;">
+  <h1>Enter Verification Code</h1>
+
+  <p style="margin-bottom: 20px; color: #666;">
+    We've sent a 6-digit verification code to <strong><%= @user.email %></strong>. Please enter it below.
+  </p>
+
+  <p style="margin-bottom: 20px; padding: 10px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; font-size: 14px;">
+    ⏱️ The code expires in 15 minutes
+  </p>
+
+  <%= form_with url: validate_otp_session_path, method: :post, local: true do |f| %>
+    <div style="margin-bottom: 15px;">
+      <%= f.label :otp_code, "Verification Code" %><br>
+      <%= f.text_field :otp_code, required: true, autofocus: true, maxlength: 6,
+          style: "width: 100%; padding: 12px; font-size: 24px; letter-spacing: 5px; text-align: center; font-weight: bold;" %>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+      <%= f.submit "Verify Code", style: "width: 100%; padding: 10px; font-size: 16px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;" %>
+    </div>
+  <% end %>
+
+  <div style="margin-top: 20px; text-align: center; padding: 15px; background: #f8f9fa; border-radius: 4px;">
+    <p style="margin-bottom: 10px; font-size: 14px; color: #666;">Didn't receive the code?</p>
+    <%= button_to "Resend Code", resend_otp_session_path, method: :post,
+        style: "padding: 8px 16px; font-size: 14px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;" %>
+  </div>
+
+  <p style="margin-top: 20px; text-align: center;">
+    <%= link_to "← Back to sign in", new_session_path, style: "color: #007bff; text-decoration: none;" %>
+  </p>
+</div>

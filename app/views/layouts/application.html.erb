@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || t("app.title") %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Mandiri Mekarbooks Com">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <nav>
+      <%= link_to t("app.name"), root_path, style: "font-weight: bold; font-size: 1.2rem;" %>
+      <%= link_to t("navigation.browse_stories"), stories_path %>
+      <% if current_user %>
+        <%= link_to t("navigation.my_reading_list"), reading_lists_path %>
+        <%= link_to "My Stories", my_stories_stories_path %>
+        <%= link_to t("navigation.write_story"), new_story_path %>
+        <%= link_to t("navigation.profile"), edit_user_path %>
+        <%= render "shared/language_switcher" %>
+        <%= button_to t("navigation.sign_out"), session_path, method: :delete, style: "background: transparent; border: 1px solid white; color: white; padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; margin-left: 1rem;" %>
+      <% else %>
+        <%= render "shared/language_switcher" %>
+        <%= link_to t("navigation.sign_in"), new_session_path %>
+      <% end %>
+    </nav>
+
+    <% if flash.any? %>
+      <div style="max-width: 800px; margin: 20px auto; padding: 0 20px;">
+        <% flash.each do |type, message| %>
+          <% if type == "notice" %>
+            <div style="background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; margin-bottom: 20px; border-radius: 8px;">
+              <%= message %>
+            </div>
+          <% elsif type == "alert" %>
+            <div style="background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; margin-bottom: 20px; border-radius: 8px;">
+              <%= message %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%= yield %>
+  </body>
+</html>
