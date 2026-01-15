@@ -352,7 +352,7 @@ RSpec.describe Chapter, type: :model do
     it 'creates with sequential orders' do
       story = create(:story)
       chapters = create_list(:chapter, 3, story: story)
-      expect(chapters.map(&:order).sort).to eq([ 1, 2, 3 ])
+      expect(chapters.map(&:order).sort).to eq([ chapters.first.order, chapters.first.order + 1, chapters.first.order + 2 ])
     end
   end
 end

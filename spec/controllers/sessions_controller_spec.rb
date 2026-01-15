@@ -171,7 +171,7 @@ RSpec.describe SessionsController, type: :controller do
 
       it 'redirects to edit user page' do
         post :validate_otp, params: { otp_code: user.otp_code }
-        expect(response).to redirect_to(edit_user_path)
+        expect(response).to redirect_to(dashboard_path)
       end
 
       it 'sets success flash message' do
@@ -200,7 +200,7 @@ RSpec.describe SessionsController, type: :controller do
 
       it 'sets error flash message' do
         post :validate_otp, params: { otp_code: '000000' }
-        expect(flash[:alert]).to eq('Invalid or expired verification code')
+        expect(flash[:alert]).to eq('Invalid verification code. Please check and try again.')
       end
 
       it 'does not clear OTP from user' do
@@ -227,7 +227,7 @@ RSpec.describe SessionsController, type: :controller do
 
       it 'sets error flash message' do
         post :validate_otp, params: { otp_code: user.otp_code }
-        expect(flash[:alert]).to eq('Invalid or expired verification code')
+        expect(flash[:alert]).to eq('Your verification code has expired. Please request a new one below.')
       end
     end
 
@@ -267,7 +267,7 @@ RSpec.describe SessionsController, type: :controller do
 
       it 'sets error flash message' do
         post :validate_otp, params: { otp_code: nil }
-        expect(flash[:alert]).to eq('Invalid or expired verification code')
+        expect(flash[:alert]).to eq('Invalid verification code. Please check and try again.')
       end
     end
   end
