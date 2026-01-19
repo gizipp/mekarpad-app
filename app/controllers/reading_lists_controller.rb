@@ -10,9 +10,9 @@ class ReadingListsController < ApplicationController
     @reading_list = current_user.reading_lists.build(story: @story)
 
     if @reading_list.save
-      redirect_to @story, notice: 'Story added to your reading list!'
+      redirect_to @story, notice: "Story added to your reading list!"
     else
-      redirect_to @story, alert: 'Unable to add story to your reading list.'
+      redirect_to @story, alert: "Unable to add story to your reading list."
     end
   end
 
@@ -21,6 +21,6 @@ class ReadingListsController < ApplicationController
     @story = @reading_list.story
     @reading_list.destroy
 
-    redirect_to @story, notice: 'Story removed from your reading list.'
+    redirect_to @story, notice: "Story removed from your reading list."
   end
 end
