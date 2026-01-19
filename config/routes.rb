@@ -13,7 +13,7 @@ Rails.application.routes.draw do
   get "/dashboard", to: "dashboard#index", as: :dashboard
 
   # Reading lists
-  resources :reading_lists, only: [:index, :create, :destroy]
+  resources :reading_lists, only: [ :index, :create, :destroy ]
 
   # Story routes with nested resources
   resources :stories do
